@@ -1,5 +1,8 @@
-public class Subtask extends Task{
-    Epic epic;
+package tasks;
+
+public class Subtask extends Task {
+    public Epic epic;
+
     public Subtask(String title, String description, String status) {
         super(title, description, status);
     }

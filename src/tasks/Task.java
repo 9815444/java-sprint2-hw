@@ -1,8 +1,10 @@
+package tasks;
+
 public class Task {
-    int id;
-    String title;
-    String description;
-    String status;
+    protected int id;
+    protected String title;
+    protected String description;
+    protected String status;
 
     public Task(String title, String description, String status) {
         this.title = title;

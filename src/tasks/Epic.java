@@ -1,8 +1,10 @@
+package tasks;
+
 import java.util.ArrayList;
 
-public class Epic extends Task{
+public class Epic extends Task {
 
-    ArrayList<Integer> epicSubtasks;
+    public ArrayList<Integer> epicSubtasks;
 
     public Epic(String title, String description) {
         super(title, description, "");
@@ -18,7 +20,6 @@ public class Epic extends Task{
                 ", status='" + status + '\'' +
                 '}';
     }
-
 
 
 }

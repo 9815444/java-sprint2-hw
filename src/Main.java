@@ -1,3 +1,7 @@
+import manager.Manager;
+import tasks.Epic;
+import tasks.Subtask;
+
 public class Main {
     public static void main(String[] args) {
         Manager manager = new Manager();
