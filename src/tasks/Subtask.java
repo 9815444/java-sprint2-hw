@@ -1,13 +1,15 @@
 package tasks;
 
+import manager.Status;
+
 public class Subtask extends Task {
     private Epic epic;
 
-    public Subtask(String title, String description, String status) {
+    public Subtask(String title, String description, Status status) {
         super(title, description, status);
     }
 
-    public Subtask(String title, String description, String status, Epic epic) {
+    public Subtask(String title, String description, Status status, Epic epic) {
         super(title, description, status);
         this.epic = epic;
     }
