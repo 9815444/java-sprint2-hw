@@ -10,9 +10,8 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-//        InMemoryTaskManager manager = new InMemoryTaskManager();
-        Managers managers = new Managers();
-        TaskManager manager = managers.getDefault();
+
+        TaskManager manager = Managers.getDefault();
 
         //epics
         Epic epic1 = new Epic("Epic №1", "");
@@ -64,8 +63,7 @@ public class Main {
         subtaskTest= manager.getSubtask(2);
         subtaskTest= manager.getSubtask(3);
 
-        //Подскажите, как звесь избежать явного приведения?
-        List<Task> taskHistory = ((InMemoryTaskManager) manager).historyManager.getHistory();
+        List<Task> taskHistory = manager.history();
 
     }
 }

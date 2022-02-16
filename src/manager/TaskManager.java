@@ -5,46 +5,49 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.util.HashMap;
+import java.util.List;
 
 public interface TaskManager {
 
     //tasks
-    public void addTask(Task task);
+    void addTask(Task task);
 
-    public void updateTask(Task task);
+    void updateTask(Task task);
 
-    public Task getTask(int id);
+    Task getTask(int id);
 
-    public HashMap<Integer, Task> getTasks();
+    HashMap<Integer, Task> getTasks();
 
-    public void deleteTask(int id);
+    void deleteTask(int id);
 
-    public void deleteAllTasks();
+    void deleteAllTasks();
 
     //epics
-    public void addEpic(Epic epic);
+    void addEpic(Epic epic);
 
-    public void updateEpic(Epic epic);
+    void updateEpic(Epic epic);
 
-    public Epic getEpic(int id);
+    Epic getEpic(int id);
 
-    public HashMap<Integer, Epic> getEpics();
+    HashMap<Integer, Epic> getEpics();
 
-    public void deleteEpic(int id);
+    void deleteEpic(int id);
 
-    public void deleteAllEpics();
+    void deleteAllEpics();
 
     //subtask
-    public void addSubtask(Subtask subtask);
+    void addSubtask(Subtask subtask);
 
-    public void updateSubtask(Subtask subtask);
+    void updateSubtask(Subtask subtask);
 
-    public Subtask getSubtask(int id);
+    Subtask getSubtask(int id);
 
-    public HashMap<Integer, Subtask> getSubtasks();
+    HashMap<Integer, Subtask> getSubtasks();
 
-    public void deleteSubtask(int id);
+    void deleteSubtask(int id);
 
-    public void deleteAllSubtask();
+    void deleteAllSubtask();
+
+    List<Task> history();
 
 }

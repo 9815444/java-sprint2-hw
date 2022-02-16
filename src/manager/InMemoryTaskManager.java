@@ -6,13 +6,14 @@ import tasks.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private int id;
     private HashMap<Integer, Task> tasks;
     private HashMap<Integer, Subtask> subtasks;
     private HashMap<Integer, Epic> epics;
-    public HistoryManager historyManager;
+    private HistoryManager historyManager;
 
     public InMemoryTaskManager() {
         id = 0;
@@ -154,6 +155,11 @@ public class InMemoryTaskManager implements TaskManager {
         for (Epic epic : epicsForStatusUpdate) {
             epic.setStatus(Status.NEW);
         }
+    }
+
+    @Override
+    public List<Task> history() {
+        return historyManager.getHistory();
     }
 
     private void calcEpicStatus(Epic epic) {
