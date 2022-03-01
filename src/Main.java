@@ -1,7 +1,4 @@
-import manager.InMemoryTaskManager;
-import manager.Managers;
-import manager.Status;
-import manager.TaskManager;
+import manager.*;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -13,57 +10,47 @@ public class Main {
 
         TaskManager manager = Managers.getDefault();
 
-        //epics
-        Epic epic1 = new Epic("Epic №1", "");
+        manager.addTask(new Task("Task1", "", Status.DONE));
+        manager.addTask(new Task("Task2", "", Status.NEW));
+
+        Epic epic1 = new Epic("Epic1", "");
         manager.addEpic(epic1);
 
         Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.DONE, epic1);
         manager.addSubtask(subtask11);
         Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.IN_PROGRESS, epic1);
         manager.addSubtask(subtask12);
+        Subtask subtask13 = new Subtask("Epic1 Subtask3", "", Status.IN_PROGRESS, epic1);
+        manager.addSubtask(subtask13);
 
-        Epic epic2 = new Epic("Epic №2", "");
+        Epic epic2 = new Epic("Epic2", "");
         manager.addEpic(epic2);
 
-        Subtask subtask21 = new Subtask("Epic2 Subtask1", "", Status.DONE, epic2);
-        manager.addSubtask(subtask21);
-
+        System.out.println("tasks = " + manager.getTasks());
         System.out.println("epics = " + manager.getEpics());
         System.out.println("subtasks = " + manager.getSubtasks());
 
-        Subtask subtask12New = new Subtask("Epic1 Subtask2 modified", "", Status.NEW, epic1);
-        subtask12New.setId(3);
-        manager.updateSubtask(subtask12New);
+        Epic epic;
+        Task task;
+        Subtask subtask;
 
-        System.out.println("epics = " + manager.getEpics());
-        System.out.println("subtasks = " + manager.getSubtasks());
+        epic = manager.getEpic(3);
+        epic = manager.getEpic(3);
+        epic = manager.getEpic(7);
+        epic = manager.getEpic(7);
+        epic = manager.getEpic(7);
+        epic = manager.getEpic(3);
 
-//        manager.deleteEpic(4);
-//        System.out.println("epics = " + manager.getEpics());
-//        System.out.println("subtasks = " + manager.getSubtasks());
-//
-//        manager.deleteSubtask(2);
-//        System.out.println("epics = " + manager.getEpics());
-//        System.out.println("subtasks = " + manager.getSubtasks());
+        task = manager.getTask(1);
+        task = manager.getTask(1);
+        task = manager.getTask(2);
+        task = manager.getTask(1);
 
-        Epic epicTest;
-        epicTest = manager.getEpic(1);
-        epicTest = manager.getEpic(1);
-        epicTest = manager.getEpic(1);
-        epicTest = manager.getEpic(4);
-        epicTest = manager.getEpic(1);
-        epicTest = manager.getEpic(4);
-        Subtask subtaskTest;
-        subtaskTest= manager.getSubtask(2);
-        subtaskTest= manager.getSubtask(3);
-        subtaskTest= manager.getSubtask(2);
-        subtaskTest= manager.getSubtask(3);
-        subtaskTest= manager.getSubtask(2);
-        subtaskTest= manager.getSubtask(3);
-        subtaskTest= manager.getSubtask(2);
-        subtaskTest= manager.getSubtask(3);
+        subtask = manager.getSubtask(4);
 
-        List<Task> taskHistory = manager.history();
+        manager.deleteEpic(3);
+
+        System.out.println("history = " + manager.history());
 
     }
 }
