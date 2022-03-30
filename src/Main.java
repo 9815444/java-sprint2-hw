@@ -48,7 +48,7 @@ public class Main {
 
         subtask = manager.getSubtask(4);
 
-        manager.deleteEpic(3);
+//        manager.deleteEpic(3);
 
         System.out.println("history = " + manager.history());
 
