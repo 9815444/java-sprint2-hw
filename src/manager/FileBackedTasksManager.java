@@ -4,6 +4,7 @@ import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -16,17 +17,67 @@ import java.util.List;
 import java.util.Objects;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private Path path;
+    private File file;
+    private String fileName;
 
     public FileBackedTasksManager() {
-        path = Paths.get("./resources/data.csv");
-        if (!Files.exists(path)) {
+        fileName = "./resources/data.csv";
+        file = new File(fileName);
+        if (!file.isFile()) {
             try {
-                path = Files.createFile(Paths.get("./resources/data.csv"));
+                Path path = Files.createFile(Paths.get(fileName));
             } catch (IOException e) {
                 System.out.println("Ошибка создания файла.");
             }
         }
+    }
+
+    public static FileBackedTasksManager loadFromFile(File file) {
+        String data = "";
+        try {
+            data = Files.readString(Path.of(file.getAbsolutePath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String[] lines = data.split("\n");
+        boolean isTitle = true;
+        boolean itsTask = true;
+        for (String line : lines) {
+            if (isTitle) {
+                isTitle = false;
+                continue;
+            }
+            if (line.isEmpty()) {
+                itsTask = false;
+                continue;
+            }
+            if (itsTask) {
+                Task task = fromString(line);
+            }
+            else {
+
+            }
+
+
+
+        }
+        return new FileBackedTasksManager();
+    }
+
+    static private Task fromString(String value) {
+        String[] dataOfTask = value.split(",");
+        TaskType taskType = TaskType.valueOf(dataOfTask[1]);
+        int id = Integer.valueOf(dataOfTask[0]);
+        String name = dataOfTask[1];
+        Status status = Status.valueOf(dataOfTask[3]);
+        String description = dataOfTask[4];
+        int epicId = Integer.valueOf(dataOfTask[5]);
+
+        switch (taskType) {
+            case TASK:
+                return new Task(id, name, description, status);
+        }
+        return null;
     }
 
     @Override
@@ -35,7 +86,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     void save() {
-        try (Writer writer = new FileWriter(String.valueOf(path))){
+        try (Writer writer = new FileWriter(file)){
             writer.write("id,type,name,status,description,epic\n");
             HashMap<Integer, String> allTasks = new HashMap<>();
             HashMap<Integer, Task> tasks = super.getTasks();

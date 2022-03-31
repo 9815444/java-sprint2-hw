@@ -21,6 +21,16 @@ public class Task {
         //
     }
 
+    public Task(int id, String title, String description, Status status) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        //new
+        this.taskType = TaskType.TASK;
+        //
+    }
+
     public int getId() {
         return id;
     }
@@ -50,4 +60,5 @@ public class Task {
     public String toStringFromFile() {
         return String.format("%s,%s,%s,%s,%s,%s", id, taskType, title, status, description, "");
     }
+
 }
