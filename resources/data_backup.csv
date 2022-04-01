@@ -6,7 +6,5 @@ id,type,name,status,description,epic
 5,SUBTASK,Epic1 Subtask2,IN_PROGRESS,,3
 6,SUBTASK,Epic1 Subtask3,IN_PROGRESS,,3
 7,EPIC,Epic2,NEW,,
-8,TASK,Task1,DONE,,
-9,TASK,Task1,DONE,,
 
-7,3,2,1,4,9
+7,3,2,1,4

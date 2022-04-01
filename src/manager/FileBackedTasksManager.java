@@ -14,7 +14,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private File file;
@@ -33,6 +32,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public static FileBackedTasksManager loadFromFile(File file) {
+
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
         String data = "";
         try {
@@ -52,7 +52,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 isTitle = false;
                 continue;
             }
-            if (line.equals("\r")) {
+            if (line.isEmpty()) {
                 itsTask = false;
                 continue;
             }
@@ -69,33 +69,88 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         tasks.add(line);
                         break;
                 }
-//                Task task = fromString(line);
-            }
-            else {
+            } else {
                 lineOfHistory = line;
             }
         }
 
+        int maxId = 0;
         for (String epicLine : epics) {
             Epic epic = (Epic) fromString(epicLine, TaskType.EPIC, fileBackedTasksManager);
-            fileBackedTasksManager.addEpic(epic);
+            int id = epic.getId();
+            if (id > maxId) {
+                maxId = id;
+            }
+            fileBackedTasksManager.epics.put(id, epic);
         }
         for (String subtaskLine : subtasks) {
             Subtask subtask = (Subtask) fromString(subtaskLine, TaskType.SUBTASK, fileBackedTasksManager);
-            fileBackedTasksManager.addSubtask(subtask);
+            int id = subtask.getId();
+            if (id > maxId) {
+                maxId = id;
+            }
+            fileBackedTasksManager.subtasks.put(id, subtask);
+            subtask.getEpic().getEpicSubtasks().add(id);
         }
         for (String taskLine : tasks) {
             Task task = fromString(taskLine, TaskType.TASK, fileBackedTasksManager);
-            fileBackedTasksManager.addTask(task);
+            int id = task.getId();
+            if (id > maxId) {
+                maxId = id;
+            }
+            fileBackedTasksManager.tasks.put(id, task);
         }
+        fileBackedTasksManager.id = maxId;
+        HistoryManager newHistoryManager = Managers.getDefaultHistory();
+        List<Integer> ids = fromString(lineOfHistory);
+        for (Integer taskId : ids) {
+            newHistoryManager.add(getTaskAllKind(taskId, fileBackedTasksManager));
+        }
+        fileBackedTasksManager.historyManager = newHistoryManager;
         return fileBackedTasksManager;
+    }
+
+
+    private static Task getTaskAllKind(int id, InMemoryTaskManager inMemoryTaskManager) {
+        Task task = inMemoryTaskManager.getTasks().get(id);
+        if (!(task == null)) {
+            return task;
+        }
+        Task epic = inMemoryTaskManager.getEpics().get(id);
+        if (!(epic == null)) {
+            return epic;
+        }
+        Task subtask = inMemoryTaskManager.getSubtasks().get(id);
+        if (!(subtask == null)) {
+            return subtask;
+        }
+        return null;
+    }
+
+
+    static String toString(HistoryManager manager) {
+        List<String> s = new ArrayList<>();
+        for (Task task : manager.getHistory()) {
+            s.add(String.valueOf(task.getId()));
+        }
+        String hist = String.join(",", s);
+        return hist;
+    }
+
+    static List<Integer> fromString(String value) {
+        String[] idsString = value.split(",");
+        List<Integer> tasksId = new ArrayList<>();
+        for (String idString : idsString) {
+            tasksId.add(Integer.valueOf(idString));
+        }
+        return tasksId;
     }
 
     static private Task fromString(String value, TaskType taskType, FileBackedTasksManager fileBackedTasksManager) {
         String[] dataOfTask = value.split(",", 6);
 //        TaskType taskType = TaskType.valueOf(dataOfTask[1]);
         int id = Integer.valueOf(dataOfTask[0]);
-        String name = dataOfTask[1];
+        String name = dataOfTask[2];
         Status status = Status.valueOf(dataOfTask[3]);
         String description = dataOfTask[4];
         String epicIdString = dataOfTask[5].trim();
@@ -104,9 +159,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             case TASK:
                 return new Task(id, name, description, status);
             case SUBTASK:
-                return new Subtask(id, name, description, status, fileBackedTasksManager.getEpic(Integer.valueOf(epicIdString)));
+                return new Subtask(id, name, description, status, fileBackedTasksManager.epics.get(Integer.valueOf(epicIdString)));
             case EPIC:
-                return new Epic(id, name, description);
+                return new Epic(id, name, status, description);
             default:
                 return null;
         }
@@ -118,7 +173,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     void save() {
-        try (Writer writer = new FileWriter(file)){
+        try (Writer writer = new FileWriter(file)) {
             writer.write("id,type,name,status,description,epic\n");
             HashMap<Integer, String> allTasks = new HashMap<>();
             HashMap<Integer, Task> tasks = super.getTasks();
@@ -137,14 +192,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 writer.write(String.format("%s\n", value));
             }
             writer.write("\n");
-            List<String> s = new ArrayList<>();
-            for (Task task : history()) {
-                s.add(String.valueOf(task.getId()));
-            }
-            String hist = String.join(",", s);
-            writer.write(hist);
+            writer.write(toString(this.historyManager));
+
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ManagerSaveException("Ошибка записи файла.");
+        }
+    }
+
+    class ManagerSaveException extends Error {
+        public ManagerSaveException() {
+        }
+
+        public ManagerSaveException(final String message) {
+            super(message);
         }
     }
 

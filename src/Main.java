@@ -35,7 +35,7 @@ public class Main {
 //        System.out.println("subtasks = " + manager.getSubtasks());
 //
 //        Epic epic;
-//        Task task;
+        Task task;
 //        Subtask subtask;
 //
 //        epic = manager.getEpic(3);
@@ -48,7 +48,7 @@ public class Main {
 //        task = manager.getTask(1);
 //        task = manager.getTask(1);
 //        task = manager.getTask(2);
-//        task = manager.getTask(1);
+        task = manager.getTask(9);
 //
 //        subtask = manager.getSubtask(4);
 //
