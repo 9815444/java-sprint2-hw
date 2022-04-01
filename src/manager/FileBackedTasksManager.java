@@ -1,5 +1,6 @@
 package manager;
 
+import exceptions.ManagerSaveException;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -19,26 +20,27 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private File file;
     private String fileName;
 
-    public FileBackedTasksManager() {
-        fileName = "./resources/data.csv";
-        file = new File(fileName);
-        if (!file.isFile()) {
-            try {
-                Path path = Files.createFile(Paths.get(fileName));
-            } catch (IOException e) {
-                System.out.println("Ошибка создания файла.");
-            }
-        }
+    public FileBackedTasksManager(File file) {
+        this.file = file;
+//        fileName = "./resources/data.csv";
+//        file = new File(fileName);
+//        if (!file.isFile()) {
+//            try {
+//                Path path = Files.createFile(Paths.get(fileName));
+//            } catch (IOException e) {
+//                System.out.println("Ошибка создания файла.");
+//            }
+//        }
     }
 
     public static FileBackedTasksManager loadFromFile(File file) {
 
-        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
+        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
         String data = "";
         try {
             data = Files.readString(Path.of(file.getAbsolutePath()));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ManagerSaveException("Ошибка чтения файла.");
         }
         String[] lines = data.split("\n");
         List<String> epics = new ArrayList<>();
@@ -52,7 +54,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 isTitle = false;
                 continue;
             }
-            if (line.isEmpty()) {
+            if (line.isEmpty() || line.equals("\r")) {
                 itsTask = false;
                 continue;
             }
@@ -101,15 +103,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             fileBackedTasksManager.tasks.put(id, task);
         }
         fileBackedTasksManager.id = maxId;
-        HistoryManager newHistoryManager = Managers.getDefaultHistory();
         List<Integer> ids = fromString(lineOfHistory);
         for (Integer taskId : ids) {
-            newHistoryManager.add(getTaskAllKind(taskId, fileBackedTasksManager));
+            fileBackedTasksManager.historyManager.add(getTaskAllKind(taskId, fileBackedTasksManager));
         }
-        fileBackedTasksManager.historyManager = newHistoryManager;
         return fileBackedTasksManager;
     }
-
 
     private static Task getTaskAllKind(int id, InMemoryTaskManager inMemoryTaskManager) {
         Task task = inMemoryTaskManager.getTasks().get(id);
@@ -127,8 +126,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return null;
     }
 
-
-    static String toString(HistoryManager manager) {
+    private static String toString(HistoryManager manager) {
         List<String> s = new ArrayList<>();
         for (Task task : manager.getHistory()) {
             s.add(String.valueOf(task.getId()));
@@ -137,7 +135,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return hist;
     }
 
-    static List<Integer> fromString(String value) {
+    private static List<Integer> fromString(String value) {
         String[] idsString = value.split(",");
         List<Integer> tasksId = new ArrayList<>();
         for (String idString : idsString) {
@@ -146,9 +144,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return tasksId;
     }
 
-    static private Task fromString(String value, TaskType taskType, FileBackedTasksManager fileBackedTasksManager) {
+    private static Task fromString(String value, TaskType taskType, FileBackedTasksManager fileBackedTasksManager) {
         String[] dataOfTask = value.split(",", 6);
-//        TaskType taskType = TaskType.valueOf(dataOfTask[1]);
         int id = Integer.valueOf(dataOfTask[0]);
         String name = dataOfTask[2];
         Status status = Status.valueOf(dataOfTask[3]);
@@ -172,7 +169,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return super.history();
     }
 
-    void save() {
+    public void save() {
         try (Writer writer = new FileWriter(file)) {
             writer.write("id,type,name,status,description,epic\n");
             HashMap<Integer, String> allTasks = new HashMap<>();
@@ -199,14 +196,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    class ManagerSaveException extends Error {
-        public ManagerSaveException() {
-        }
 
-        public ManagerSaveException(final String message) {
-            super(message);
-        }
-    }
 
     @Override
     public void addTask(Task task) {
