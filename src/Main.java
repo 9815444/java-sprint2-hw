@@ -51,9 +51,11 @@ public class Main {
 
 //        manager.deleteEpic(3);
 
-        System.out.println("history = " + manager.history());
+
 
         TaskManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(new File("./resources/data.csv"));
+
+        System.out.println("history = " + fileBackedTasksManager.history());
 
     }
 }

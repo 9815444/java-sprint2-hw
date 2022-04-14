@@ -22,15 +22,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public FileBackedTasksManager(File file) {
         this.file = file;
-//        fileName = "./resources/data.csv";
-//        file = new File(fileName);
-//        if (!file.isFile()) {
-//            try {
-//                Path path = Files.createFile(Paths.get(fileName));
-//            } catch (IOException e) {
-//                System.out.println("Ошибка создания файла.");
-//            }
-//        }
     }
 
     public static FileBackedTasksManager loadFromFile(File file) {
@@ -164,12 +155,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    @Override
-    public List<Task> history() {
-        return super.history();
-    }
-
-    public void save() {
+    private void save() {
         try (Writer writer = new FileWriter(file)) {
             writer.write("id,type,name,status,description,epic\n");
             HashMap<Integer, String> allTasks = new HashMap<>();
