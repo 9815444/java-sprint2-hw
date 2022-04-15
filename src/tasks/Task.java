@@ -73,7 +73,7 @@ public class Task {
     }
 
     public String toStringFromFile() {
-        return String.format("%s,%s,%s,%s,%s,%s", id, taskType, title, status, description, "");
+        return String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s", id, taskType, title, status, description, "", startTime, duration, getEndTime());
     }
 
 }

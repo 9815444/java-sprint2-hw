@@ -156,7 +156,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private void save() {
         try (Writer writer = new FileWriter(file)) {
-            writer.write("id,type,name,status,description,epic\n");
+            writer.write("id,type,name,status,description,epic,starttime,duration,endtime\n");
             HashMap<Integer, String> allTasks = new HashMap<>();
             HashMap<Integer, Task> tasks = super.getTasks();
             for (Integer id : tasks.keySet()) {
