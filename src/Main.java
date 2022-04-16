@@ -8,20 +8,38 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static java.time.LocalTime.now;
+
 public class Main {
     public static void main(String[] args) {
 
         TaskManager manager = Managers.getDefault();
 
-        manager.addTask(new Task("Task1", "", Status.DONE, LocalDateTime.now(), Duration.ofHours(1)));
+        //Without dates
+        manager.addTask(new Task("Task1", "", Status.DONE));
         manager.addTask(new Task("Task2", "", Status.NEW));
 
-//        Epic epic1 = new Epic("Epic1", "");
-//        manager.addEpic(epic1);
-//
-//        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.DONE, epic1);
+        //With dates
+//        manager.addTask(new Task("Task1", "", Status.DONE, LocalDateTime.now(), Duration.ofHours(1)));
+//        manager.addTask(new Task("Task2", "", Status.NEW, LocalDateTime.now(), Duration.ofHours(2)));
+
+        Epic epic1 = new Epic("Epic1", "");
+        manager.addEpic(epic1);
+
+        //Without dates
+        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1));
+        manager.addSubtask(subtask11);
+        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.IN_PROGRESS, epic1);
+        manager.addSubtask(subtask12);
+        Subtask subtask13 = new Subtask("Epic1 Subtask3", "", Status.IN_PROGRESS, epic1);
+        manager.addSubtask(subtask13);
+
+        //With dates
+//        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.DONE, epic1,
+//                LocalDateTime.of(2022, 1, 1, 1, 1), Duration.ofHours(4));
 //        manager.addSubtask(subtask11);
-//        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.IN_PROGRESS, epic1);
+//        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.IN_PROGRESS, epic1,
+//                LocalDateTime.of(2022, 5, 1, 1, 1), Duration.ofHours(5));
 //        manager.addSubtask(subtask12);
 //        Subtask subtask13 = new Subtask("Epic1 Subtask3", "", Status.IN_PROGRESS, epic1);
 //        manager.addSubtask(subtask13);
@@ -29,9 +47,9 @@ public class Main {
 //        Epic epic2 = new Epic("Epic2", "");
 //        manager.addEpic(epic2);
 //
-//        System.out.println("tasks = " + manager.getTasks());
-//        System.out.println("epics = " + manager.getEpics());
-//        System.out.println("subtasks = " + manager.getSubtasks());
+        System.out.println("tasks = " + manager.getTasks());
+        System.out.println("epics = " + manager.getEpics());
+        System.out.println("subtasks = " + manager.getSubtasks());
 //
 //        Epic epic;
 //        Task task;
@@ -55,7 +73,12 @@ public class Main {
 //
 //
 //
-//        TaskManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(new File("./resources/data.csv"));
+        TaskManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(new File("./resources/data.csv"));
+
+        System.out.println("tasks = " + manager.getTasks());
+        System.out.println("epics = " + manager.getEpics());
+        System.out.println("subtasks = " + manager.getSubtasks());
+//        System.out.println("tasks = " + manager.getTasks());
 //
 //        System.out.println("history = " + fileBackedTasksManager.history());
 

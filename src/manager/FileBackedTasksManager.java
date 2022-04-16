@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -129,29 +131,50 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String[] idsString = value.split(",");
         List<Integer> tasksId = new ArrayList<>();
         for (String idString : idsString) {
-            tasksId.add(Integer.valueOf(idString));
+            if (!idString.isEmpty()) {
+                tasksId.add(Integer.valueOf(idString));
+            }
         }
         return tasksId;
     }
 
     private static Task fromString(String value, TaskType taskType, FileBackedTasksManager fileBackedTasksManager) {
-        String[] dataOfTask = value.split(",", 6);
+        String[] dataOfTask = value.split(",", -1);
         int id = Integer.valueOf(dataOfTask[0]);
         String name = dataOfTask[2];
         Status status = Status.valueOf(dataOfTask[3]);
         String description = dataOfTask[4];
         String epicIdString = dataOfTask[5].trim();
+        LocalDateTime startTime = parseDate(dataOfTask[6].trim());
+        Duration duration = parseDuration(dataOfTask[7].trim());
+        LocalDateTime endTime = parseDate(dataOfTask[8].trim());
 
         switch (taskType) {
             case TASK:
-                return new Task(id, name, description, status);
+                return new Task(id, name, description, status, startTime, duration);
             case SUBTASK:
-                return new Subtask(id, name, description, status, fileBackedTasksManager.epics.get(Integer.valueOf(epicIdString)));
+                return new Subtask(id, name, description, status,
+                        fileBackedTasksManager.epics.get(Integer.valueOf(epicIdString)),
+                        startTime, duration);
             case EPIC:
                 return new Epic(id, name, status, description);
             default:
                 return null;
         }
+    }
+
+    private static LocalDateTime parseDate(String string) {
+        if (string.equals("null"))
+            return null;
+        else
+            return LocalDateTime.parse(string);
+    }
+
+    private static Duration parseDuration(String string) {
+        if (string.equals("null"))
+            return null;
+        else
+            return Duration.parse(string);
     }
 
     private void save() {

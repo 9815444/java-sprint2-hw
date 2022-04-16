@@ -4,6 +4,8 @@ import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -171,23 +173,45 @@ public class InMemoryTaskManager implements TaskManager {
 
     private void calcEpicStatus(Epic epic) {
 
-        if (epic.getEpicSubtasks().size() == 0) {
+        ArrayList<Integer> subtaskIdArrayList = epic.getEpicSubtasks();
+
+        if (subtaskIdArrayList.size() == 0) {
             epic.setStatus(Status.NEW);
             return;
         }
 
         boolean allTaskIsNew = true;
         boolean allTaskIsDone = true;
+        LocalDateTime epicsStartTime = null;
+        LocalDateTime epicsEndTime = null;
 
-        for (Integer epicSubtaskId : epic.getEpicSubtasks()) {
-            Status status = subtasks.get(epicSubtaskId).getStatus();
+        for (Integer epicSubtaskId : subtaskIdArrayList) {
+            Subtask currentSubtask = subtasks.get(epicSubtaskId);
+            Status status = currentSubtask.getStatus();
             if (!(status == Status.NEW)) {
                 allTaskIsNew = false;
             }
             if (!(status == Status.DONE)) {
                 allTaskIsDone = false;
             }
+            if (currentSubtask.getStartTime() != null) {
+                if (epicsStartTime == null || currentSubtask.getStartTime().isBefore(epicsStartTime)) {
+                    epicsStartTime = currentSubtask.getStartTime();
+                }
+            }
+            if (currentSubtask.getEndTime() != null) {
+                if (epicsEndTime == null || currentSubtask.getEndTime().isAfter(epicsEndTime)) {
+                    epicsEndTime = currentSubtask.getEndTime();
+                }
+            }
         }
+
+        epic.setStartTime(epicsStartTime);
+        epic.setEndTime(epicsEndTime);
+        if (epicsStartTime == null || epicsEndTime == null)
+            epic.setDuration(null);
+        else
+            epic.setDuration(Duration.between(epicsStartTime, epicsEndTime));
 
         if (allTaskIsDone) {
             epic.setStatus(Status.DONE);

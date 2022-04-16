@@ -10,6 +10,9 @@ import tasks.Epic;
 import org.junit.jupiter.api.Assertions.*;
 import tasks.Subtask;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 class EpicTest {
 
     @Test
@@ -29,9 +32,9 @@ class EpicTest {
         TaskManager manager = Managers.getDefault();
         Epic epic1 = new Epic("Epic1", "");
         manager.addEpic(epic1);
-        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.NEW, epic1);
+        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1));
         manager.addSubtask(subtask11);
-        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.NEW, epic1);
+        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1));
         manager.addSubtask(subtask12);
         Status status = epic1.getStatus();
         Assertions.assertEquals(Status.NEW, status);
@@ -44,9 +47,9 @@ class EpicTest {
         TaskManager manager = Managers.getDefault();
         Epic epic1 = new Epic("Epic1", "");
         manager.addEpic(epic1);
-        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.DONE, epic1);
+        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1));
         manager.addSubtask(subtask11);
-        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.DONE, epic1);
+        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1));
         manager.addSubtask(subtask12);
         Status status = epic1.getStatus();
         Assertions.assertEquals(Status.DONE, status);
@@ -58,9 +61,9 @@ class EpicTest {
         TaskManager manager = Managers.getDefault();
         Epic epic1 = new Epic("Epic1", "");
         manager.addEpic(epic1);
-        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.DONE, epic1);
+        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1));
         manager.addSubtask(subtask11);
-        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.NEW, epic1);
+        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1));
         manager.addSubtask(subtask12);
         Status status = epic1.getStatus();
         Assertions.assertEquals(Status.IN_PROGRESS, status);
@@ -72,9 +75,9 @@ class EpicTest {
         TaskManager manager = Managers.getDefault();
         Epic epic1 = new Epic("Epic1", "");
         manager.addEpic(epic1);
-        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.IN_PROGRESS, epic1);
+        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.IN_PROGRESS, epic1, LocalDateTime.now(), Duration.ofHours(1));
         manager.addSubtask(subtask11);
-        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.IN_PROGRESS, epic1);
+        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.IN_PROGRESS, epic1, LocalDateTime.now(), Duration.ofHours(1));
         manager.addSubtask(subtask12);
         Status status = epic1.getStatus();
         Assertions.assertEquals(Status.IN_PROGRESS, status);
