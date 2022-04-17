@@ -6,6 +6,8 @@ import tasks.Task;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public interface TaskManager {
 
@@ -43,6 +45,8 @@ public interface TaskManager {
     Subtask getSubtask(int id);
 
     HashMap<Integer, Subtask> getSubtasks();
+
+    TreeSet<Task> getPrioritizedTasks();
 
     void deleteSubtask(int id);
 

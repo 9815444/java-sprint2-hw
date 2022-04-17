@@ -16,8 +16,13 @@ public class Main {
         TaskManager manager = Managers.getDefault();
 
         //Without dates
-        manager.addTask(new Task("Task1", "", Status.DONE));
-        manager.addTask(new Task("Task2", "", Status.NEW));
+        manager.addTask(new Task("TaskNull", "", Status.DONE));
+        manager.addTask(new Task("Task2", "", Status.NEW, LocalDateTime.now().plusHours(1), Duration.ofHours(1)));
+        manager.addTask(new Task("Task1", "", Status.DONE, LocalDateTime.now(), Duration.ofHours(1)));
+        Task task21 = new Task("Task21", "", Status.NEW, LocalDateTime.now().plusHours(1), Duration.ofHours(1));
+        task21.setId(2);
+        manager.updateTask(task21);
+
 
         //With dates
 //        manager.addTask(new Task("Task1", "", Status.DONE, LocalDateTime.now(), Duration.ofHours(1)));
@@ -50,6 +55,8 @@ public class Main {
         System.out.println("tasks = " + manager.getTasks());
         System.out.println("epics = " + manager.getEpics());
         System.out.println("subtasks = " + manager.getSubtasks());
+        System.out.printf("prioritizedTasks = \n");
+        manager.getPrioritizedTasks().forEach(System.out::println);
 //
 //        Epic epic;
 //        Task task;
@@ -73,11 +80,11 @@ public class Main {
 //
 //
 //
-        TaskManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(new File("./resources/data.csv"));
-
-        System.out.println("tasks = " + manager.getTasks());
-        System.out.println("epics = " + manager.getEpics());
-        System.out.println("subtasks = " + manager.getSubtasks());
+//        TaskManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(new File("./resources/data.csv"));
+//
+//        System.out.println("tasks = " + manager.getTasks());
+//        System.out.println("epics = " + manager.getEpics());
+//        System.out.println("subtasks = " + manager.getSubtasks());
 //        System.out.println("tasks = " + manager.getTasks());
 //
 //        System.out.println("history = " + fileBackedTasksManager.history());
