@@ -1,5 +1,6 @@
 package manager;
 
+import exceptions.TaskStartTimeException;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -25,36 +26,62 @@ public class InMemoryTaskManager implements TaskManager {
         Comparator<Task> comparator = new Comparator<Task>() {
             @Override
             public int compare(Task o1, Task o2) {
-                if (o1.getStartTime() == null && o2.getStartTime() == null)
-                    return 1;
-                else if (o1.getStartTime() == null && o2.getStartTime() != null)
-                    return 1;
-                else if (o1.getStartTime() != null && o2.getStartTime() == null)
-                    return -1;
-                else if (o1.getStartTime().equals(o2.getStartTime()))
-                    return 1;
-                else
-                    return  (int) -Duration.between(o1.getStartTime(), o2.getStartTime()).toMillis();
+                if (o1.getStartTime() == null && o2.getStartTime() == null) return 1;
+                else if (o1.getStartTime() == null && o2.getStartTime() != null) return 1;
+                else if (o1.getStartTime() != null && o2.getStartTime() == null) return -1;
+                else if (o1.getStartTime().equals(o2.getStartTime())) return 1;
+                else return (int) -Duration.between(o1.getStartTime(), o2.getStartTime()).toMillis();
             }
         };
         prioritizedTasks = new TreeSet<Task>(comparator);
     }
 
+    boolean isTaskStartTimeException() {
+        LocalDateTime prevEndTime = null;
+        for (Task prioritizedTask : prioritizedTasks) {
+            if (prevEndTime == null) {
+                prevEndTime = prioritizedTask.getEndTime();
+                continue;
+            }
+            if (prioritizedTask.getEndTime() == null) {
+                continue;
+            }
+            if (prevEndTime.isAfter(prioritizedTask.getStartTime())) {
+                return true;
+            } else {
+                prevEndTime = prioritizedTask.getEndTime();
+            }
+        }
+        return false;
+    }
+
     //tasks
     @Override
     public void addTask(Task task) {
-
-        task.setId(++id);
-        tasks.put(id, task);
-        prioritizedTasks.add(task);
+        try {
+            task.setId(++id);
+            tasks.put(id, task);
+            prioritizedTasks.add(task);
+            if (isTaskStartTimeException()) {
+                throw new TaskStartTimeException("Пересечение задач.");
+            }
+        } catch (TaskStartTimeException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
     public void updateTask(Task task) {
-        prioritizedTasks.remove(tasks.get(task.getId()));
-        prioritizedTasks.add(task);
-        tasks.put(task.getId(), task);
-
+        try {
+            prioritizedTasks.remove(tasks.get(task.getId()));
+            prioritizedTasks.add(task);
+            tasks.put(task.getId(), task);
+            if (isTaskStartTimeException()) {
+                throw new TaskStartTimeException("Пересечение задач.");
+            }
+        } catch (TaskStartTimeException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
@@ -141,19 +168,33 @@ public class InMemoryTaskManager implements TaskManager {
     //subtask
     @Override
     public void addSubtask(Subtask subtask) {
-        subtask.setId(++id);
-        subtasks.put(id, subtask);
-        prioritizedTasks.add(subtask);
-        subtask.getEpic().getEpicSubtasks().add(id);
-        calcEpicStatus(subtask.getEpic());
+        try {
+            subtask.setId(++id);
+            subtasks.put(id, subtask);
+            prioritizedTasks.add(subtask);
+            subtask.getEpic().getEpicSubtasks().add(id);
+            calcEpicStatus(subtask.getEpic());
+            if (isTaskStartTimeException()) {
+                throw new TaskStartTimeException("Пересечение задач.");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
     public void updateSubtask(Subtask subtask) {
-        prioritizedTasks.remove(tasks.get(subtask.getId()));
-        prioritizedTasks.add(subtask);
-        subtasks.put(subtask.getId(), subtask);
-        calcEpicStatus(subtask.getEpic());
+        try {
+            prioritizedTasks.remove(subtasks.get(subtask.getId()));
+            prioritizedTasks.add(subtask);
+            subtasks.put(subtask.getId(), subtask);
+            calcEpicStatus(subtask.getEpic());
+            if (isTaskStartTimeException()) {
+                throw new TaskStartTimeException("Пересечение задач.");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
@@ -243,10 +284,8 @@ public class InMemoryTaskManager implements TaskManager {
 
         epic.setStartTime(epicsStartTime);
         epic.setEndTime(epicsEndTime);
-        if (epicsStartTime == null || epicsEndTime == null)
-            epic.setDuration(null);
-        else
-            epic.setDuration(Duration.between(epicsStartTime, epicsEndTime));
+        if (epicsStartTime == null || epicsEndTime == null) epic.setDuration(null);
+        else epic.setDuration(Duration.between(epicsStartTime, epicsEndTime));
 
         if (allTaskIsDone) {
             epic.setStatus(Status.DONE);

@@ -280,10 +280,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
         manager.addEpic(epic1);
         Subtask subtask1 = new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1));
         manager.addSubtask(subtask1);
-        Subtask subtask2 = new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1));
+        Subtask subtask2 = new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1));
         manager.addSubtask(subtask2);
 
-        Subtask subtask2New = new Subtask("Epic1 Subtask2New", "", Status.IN_PROGRESS, epic1, LocalDateTime.now(), Duration.ofHours(1));
+        Subtask subtask2New = new Subtask("Epic1 Subtask2New", "", Status.IN_PROGRESS, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1));
         subtask2New.setId(subtask2.getId());
         manager.updateSubtask(subtask2New);
 
@@ -491,6 +491,19 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         List<Task> exphistory = List.of(task1, task2);
         assertEquals(exphistory, manager.history(), "Неверная история.");
+    }
+
+    @Test
+    void  test18_TaskEndTimeError() {
+        LocalDateTime startTime1 = LocalDateTime.of(2022, 1, 1, 1, 1);
+        Duration duration1 = Duration.ofHours(2);
+        Task task1 = new Task("Task1", "", Status.DONE, startTime1, duration1);
+        manager.addTask(task1);
+
+        LocalDateTime startTime2 = LocalDateTime.of(2022, 1, 1, 1, 5);
+        Duration duration2 = Duration.ofHours(2);
+        Task task2 = new Task("Task2", "", Status.DONE, startTime1, duration1);
+        manager.addTask(task2);
     }
 
 }

@@ -17,27 +17,27 @@ public class Main {
 
         //Without dates
         manager.addTask(new Task("TaskNull", "", Status.DONE));
-        manager.addTask(new Task("Task2", "", Status.NEW, LocalDateTime.now().plusHours(1), Duration.ofHours(1)));
-        manager.addTask(new Task("Task1", "", Status.DONE, LocalDateTime.now(), Duration.ofHours(1)));
-        Task task21 = new Task("Task21", "", Status.NEW, LocalDateTime.now().plusHours(1), Duration.ofHours(1));
-        task21.setId(2);
-        manager.updateTask(task21);
+        manager.addTask(new Task("Task2", "", Status.NEW, LocalDateTime.now(), Duration.ofHours(2)));
+        manager.addTask(new Task("Task1", "", Status.DONE, LocalDateTime.now().plusHours(1), Duration.ofHours(1)));
+//        Task task21 = new Task("Task21", "", Status.NEW, LocalDateTime.now().plusHours(1), Duration.ofHours(1));
+//        task21.setId(2);
+//        manager.updateTask(task21);
 
 
         //With dates
 //        manager.addTask(new Task("Task1", "", Status.DONE, LocalDateTime.now(), Duration.ofHours(1)));
 //        manager.addTask(new Task("Task2", "", Status.NEW, LocalDateTime.now(), Duration.ofHours(2)));
 
-        Epic epic1 = new Epic("Epic1", "");
-        manager.addEpic(epic1);
-
-        //Without dates
-        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1));
-        manager.addSubtask(subtask11);
-        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.IN_PROGRESS, epic1);
-        manager.addSubtask(subtask12);
-        Subtask subtask13 = new Subtask("Epic1 Subtask3", "", Status.IN_PROGRESS, epic1);
-        manager.addSubtask(subtask13);
+//        Epic epic1 = new Epic("Epic1", "");
+//        manager.addEpic(epic1);
+//
+//        //Without dates
+//        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1));
+//        manager.addSubtask(subtask11);
+//        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.IN_PROGRESS, epic1);
+//        manager.addSubtask(subtask12);
+//        Subtask subtask13 = new Subtask("Epic1 Subtask3", "", Status.IN_PROGRESS, epic1);
+//        manager.addSubtask(subtask13);
 
         //With dates
 //        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.DONE, epic1,
