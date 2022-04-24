@@ -4,6 +4,7 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,14 +12,15 @@ import java.util.List;
 import static java.time.LocalTime.now;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         TaskManager manager = Managers.getDefault();
+        HttpTaskServer.createServer();
 
         //Without dates
-        manager.addTask(new Task("TaskNull", "", Status.DONE));
-        manager.addTask(new Task("Task2", "", Status.NEW, LocalDateTime.now(), Duration.ofHours(2)));
-        manager.addTask(new Task("Task1", "", Status.DONE, LocalDateTime.now().plusHours(1), Duration.ofHours(1)));
+//        manager.addTask(new Task("TaskNull", "", Status.DONE));
+//        manager.addTask(new Task("Task2", "", Status.NEW, LocalDateTime.now(), Duration.ofHours(2)));
+//        manager.addTask(new Task("Task1", "", Status.DONE, LocalDateTime.now().plusHours(1), Duration.ofHours(1)));
 //        Task task21 = new Task("Task21", "", Status.NEW, LocalDateTime.now().plusHours(1), Duration.ofHours(1));
 //        task21.setId(2);
 //        manager.updateTask(task21);
@@ -52,11 +54,11 @@ public class Main {
 //        Epic epic2 = new Epic("Epic2", "");
 //        manager.addEpic(epic2);
 //
-        System.out.println("tasks = " + manager.getTasks());
-        System.out.println("epics = " + manager.getEpics());
-        System.out.println("subtasks = " + manager.getSubtasks());
-        System.out.printf("prioritizedTasks = \n");
-        manager.getPrioritizedTasks().forEach(System.out::println);
+//        System.out.println("tasks = " + manager.getTasks());
+//        System.out.println("epics = " + manager.getEpics());
+//        System.out.println("subtasks = " + manager.getSubtasks());
+//        System.out.printf("prioritizedTasks = \n");
+//        manager.getPrioritizedTasks().forEach(System.out::println);
 //
 //        Epic epic;
 //        Task task;
