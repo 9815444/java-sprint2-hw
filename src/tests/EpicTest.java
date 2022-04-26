@@ -1,4 +1,4 @@
-package Tests;
+package tests;
 
 import manager.Managers;
 import manager.Status;
@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
 
-import org.junit.jupiter.api.Assertions.*;
 import tasks.Subtask;
 
 import java.time.Duration;

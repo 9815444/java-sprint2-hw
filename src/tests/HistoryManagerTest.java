@@ -1,17 +1,7 @@
-package Tests;
+package tests;
 
 import manager.HistoryManager;
-import manager.InMemoryHistoryManager;
-import manager.InMemoryTaskManager;
-import manager.Status;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import tasks.Epic;
-import tasks.Subtask;
-
-import java.util.HashMap;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class HistoryManagerTest<T extends HistoryManager>{
 

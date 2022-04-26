@@ -1,21 +1,15 @@
+import api.HttpTaskServer;
 import manager.*;
-import tasks.Epic;
-import tasks.Subtask;
-import tasks.Task;
 
-import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
 
 import static java.time.LocalTime.now;
 
 public class Main {
     public static void main(String[] args) throws IOException {
 
-        TaskManager manager = Managers.getDefault();
-        HttpTaskServer.createServer();
+        FileBackedTasksManager manager = (FileBackedTasksManager) Managers.getDefault();
+        HttpTaskServer httpTaskServer = new HttpTaskServer(manager);
 
         //Without dates
 //        manager.addTask(new Task("TaskNull", "", Status.DONE));
