@@ -1,6 +1,7 @@
 import api.HttpTaskServer;
 import api.KVServer;
 import api.KVTaskClient;
+import com.google.gson.Gson;
 import manager.*;
 import tasks.Task;
 
@@ -14,12 +15,17 @@ import static java.time.LocalTime.now;
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
 
+        Gson gson = new Gson();
+
         FileBackedTasksManager manager = FileBackedTasksManager.loadFromFile(new File("./resources/data.csv"));
 //        FileBackedTasksManager manager = (FileBackedTasksManager) Managers.getDefault();
 
         HttpTaskServer httpTaskServer = new HttpTaskServer(manager);
         new KVServer().start();
         KVTaskClient client = new KVTaskClient("http://localhost:8078/");
+        client.put("manager", gson.toJson(manager, FileBackedTasksManager.class));
+        manager = gson.fromJson(client.load("manager"), FileBackedTasksManager.class); //почему ошибка при восстановлении объекта?
+        int f = 1;
 
         //Without dates
 //        manager.addTask(new Task("TaskNull", "", Status.DONE));

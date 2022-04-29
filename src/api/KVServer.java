@@ -70,7 +70,13 @@ public class KVServer {
             }
         });
         server.createContext("/load", (h) -> {
-            // TODO Добавьте получение значения по ключу
+            // TODO Добавьте получение значения по
+            String key = h.getRequestURI().getPath().substring("/load/".length());
+            String value = data.get(key);
+            byte[] resp = value.getBytes("UTF-8");
+            h.getResponseHeaders().add("Content-Type", "application/json");
+            h.sendResponseHeaders(200, resp.length);
+            h.getResponseBody().write(resp);
         });
     }
 
