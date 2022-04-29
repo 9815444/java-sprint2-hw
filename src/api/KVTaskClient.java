@@ -7,11 +7,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class KVTaskClient {
-    private final String API_KEY;
+    private String API_KEY = "DEBUG";
     private final String url;
     private final HttpClient client;
 
-    public KVTaskClient(String url) throws IOException, InterruptedException {
+    public KVTaskClient(String url) {
         this.url = url;
         client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -20,8 +20,14 @@ public class KVTaskClient {
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
-        HttpResponse<String> response = client.send(request, handler);
-        API_KEY = response.body();
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+            API_KEY = response.body();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void put(String key, String json) throws IOException, InterruptedException {

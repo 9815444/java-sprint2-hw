@@ -25,6 +25,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         this.file = file;
     }
 
+    public FileBackedTasksManager() {
+    }
+
     public static FileBackedTasksManager loadFromFile(File file) {
 
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
@@ -177,7 +180,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             return Duration.parse(string);
     }
 
-    private void save() {
+    protected void save() {
         try (Writer writer = new FileWriter(file)) {
             writer.write("id,type,name,status,description,epic,starttime,duration,endtime\n");
             HashMap<Integer, String> allTasks = new HashMap<>();

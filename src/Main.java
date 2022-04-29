@@ -17,18 +17,18 @@ public class Main {
 
         Gson gson = new Gson();
 
-        FileBackedTasksManager manager = FileBackedTasksManager.loadFromFile(new File("./resources/data.csv"));
+//        FileBackedTasksManager manager = FileBackedTasksManager.loadFromFile(new File("./resources/data.csv"));
 //        FileBackedTasksManager manager = (FileBackedTasksManager) Managers.getDefault();
-
+        HTTPTaskManager manager = (HTTPTaskManager) Managers.getDefault();
         HttpTaskServer httpTaskServer = new HttpTaskServer(manager);
         new KVServer().start();
-        KVTaskClient client = new KVTaskClient("http://localhost:8078/");
-        client.put("manager", gson.toJson(manager, FileBackedTasksManager.class));
-        manager = gson.fromJson(client.load("manager"), FileBackedTasksManager.class); //почему ошибка при восстановлении объекта?
+//        KVTaskClient client = new KVTaskClient("http://localhost:8078/");
+//        client.put("manager", gson.toJson(manager, FileBackedTasksManager.class));
+//        manager = gson.fromJson(client.load("manager"), FileBackedTasksManager.class); //почему ошибка при восстановлении объекта?
         int f = 1;
 
         //Without dates
-//        manager.addTask(new Task("TaskNull", "", Status.DONE));
+        manager.addTask(new Task("TaskNull", "", Status.DONE));
 //        manager.addTask(new Task("Task2", "", Status.NEW, LocalDateTime.now(), Duration.ofMinutes(10)));
 //        manager.addTask(new Task("Task1", "", Status.DONE, LocalDateTime.now().plusHours(1), Duration.ofHours(1)));
 //        Task task21 = new Task("Task21", "", Status.NEW, LocalDateTime.now().plusHours(1), Duration.ofHours(1));
