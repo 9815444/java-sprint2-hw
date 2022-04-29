@@ -1,19 +1,29 @@
 import api.HttpTaskServer;
+import api.KVServer;
+import api.KVTaskClient;
 import manager.*;
+import tasks.Task;
 
+import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static java.time.LocalTime.now;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
 
-        FileBackedTasksManager manager = (FileBackedTasksManager) Managers.getDefault();
+        FileBackedTasksManager manager = FileBackedTasksManager.loadFromFile(new File("./resources/data.csv"));
+//        FileBackedTasksManager manager = (FileBackedTasksManager) Managers.getDefault();
+
         HttpTaskServer httpTaskServer = new HttpTaskServer(manager);
+        new KVServer().start();
+        KVTaskClient client = new KVTaskClient("http://localhost:8078/");
 
         //Without dates
 //        manager.addTask(new Task("TaskNull", "", Status.DONE));
-//        manager.addTask(new Task("Task2", "", Status.NEW, LocalDateTime.now(), Duration.ofHours(2)));
+//        manager.addTask(new Task("Task2", "", Status.NEW, LocalDateTime.now(), Duration.ofMinutes(10)));
 //        manager.addTask(new Task("Task1", "", Status.DONE, LocalDateTime.now().plusHours(1), Duration.ofHours(1)));
 //        Task task21 = new Task("Task21", "", Status.NEW, LocalDateTime.now().plusHours(1), Duration.ofHours(1));
 //        task21.setId(2);

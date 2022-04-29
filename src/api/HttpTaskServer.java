@@ -9,9 +9,12 @@ import manager.FileBackedTasksManager;
 import tasks.Task;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+
+import static jdk.internal.util.xml.XMLStreamWriter.DEFAULT_CHARSET;
 
 public class HttpTaskServer {
     private static final int PORT = 8080;
@@ -42,24 +45,65 @@ public class HttpTaskServer {
             String query = exchange.getRequestURI().getQuery();
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+            String response = "";
             switch (method) {
                 case "GET":
                     if (splitPath.length == 3 && splitPath[2].equals("task")) {
-                        if (query.isEmpty()) {
-
+                        if (query == null) {
+                            exchange.sendResponseHeaders(200, 0);
+                            response = gson.toJson(manager.getTasks());
+                            try (OutputStream os = exchange.getResponseBody()) {
+                                os.write(response.getBytes());
+                            }
                         } else {
                             int id = Integer.valueOf(query.replaceFirst("id=", ""));
                             Task task = manager.getTask(id);
-                            String response = gson.toJson(task);
-                            try (OutputStream os = exchange.getResponseBody()){
+                            exchange.sendResponseHeaders(200, 0);
+                            response = gson.toJson(task);
+                            try (OutputStream os = exchange.getResponseBody()) {
                                 os.write(response.getBytes());
                             }
                         }
                     }
                     break;
-            }
+                case "POST":
+                    InputStream inputStream = exchange.getRequestBody();
+                    String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
+                    Task task = gson.fromJson(body, Task.class);
+                    //Если id не передан, то считаем, что это add. Иначе - update
+                    if (task.getId() == 0) {
+                        manager.addTask(task);
+                    }
+                    else {
+                        manager.updateTask(task);
+                    }
+                    exchange.sendResponseHeaders(201, 0);
+                    try (OutputStream os = exchange.getResponseBody()) {
+                        os.write(response.getBytes());
+                    }
+                    System.out.println(manager.getTasks());
+                    break;
+                case "DELETE":
+                    if (splitPath.length == 3 && splitPath[2].equals("task")) {
+                        if (query == null) {
+                            manager.deleteAllTasks();
+                            exchange.sendResponseHeaders(200, 0);
+                            try (OutputStream os = exchange.getResponseBody()) {
+                                os.write(response.getBytes());
+                            }
+                        } else {
+                            int id = Integer.valueOf(query.replaceFirst("id=", ""));
+                            manager.deleteTask(id);
+                            exchange.sendResponseHeaders(200, 0);
+                            try (OutputStream os = exchange.getResponseBody()) {
+                                os.write(response.getBytes());
+                            }
+                        }
+                        break;
+                    }
 
+            }
         }
     }
-
 }
+
