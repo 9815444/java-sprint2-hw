@@ -72,19 +72,36 @@ public class KVServer {
         server.createContext("/load", (h) -> {
             // TODO Добавьте получение значения по
             String key = h.getRequestURI().getPath().substring("/load/".length());
-            String value = data.get(key);
-            byte[] resp = value.getBytes("UTF-8");
-            h.getResponseHeaders().add("Content-Type", "application/json");
-            h.sendResponseHeaders(200, resp.length);
-            h.getResponseBody().write(resp);
+            String value = data.getOrDefault(key, "");
+//            if (value == null) {
+//                value = "";
+//                h.sendResponseHeaders(404, 0);
+//                h.getResponseBody().write(value.getBytes("UTF-8"));
+//            }
+//            else {
+                byte[] resp = value.getBytes("UTF-8");
+                h.getResponseHeaders().add("Content-Type", "application/json");
+                h.sendResponseHeaders(200, resp.length);
+                h.getResponseBody().write(resp);
+                h.close();
+//            }
+
         });
     }
 
     public void start() {
+//        try {
+//            server.stop(0);
+//        } catch (Exception e) {
+//        }
         System.out.println("Запускаем сервер на порту " + PORT);
         System.out.println("Открой в браузере http://localhost:" + PORT + "/");
         System.out.println("API_KEY: " + API_KEY);
         server.start();
+    }
+
+    public void stop() {
+        server.stop(0);
     }
 
     private String generateApiKey() {
