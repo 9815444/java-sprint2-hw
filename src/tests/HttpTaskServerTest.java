@@ -25,7 +25,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class HttpTaskServerTest {
 
@@ -310,7 +311,8 @@ public class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
-        ArrayList<Integer> test2 = gson.fromJson(response.body(), new TypeToken<List<Integer>>(){}.getType());
+        ArrayList<Integer> test2 = gson.fromJson(response.body(), new TypeToken<List<Integer>>() {
+        }.getType());
         assertEquals(5, test2.get(0));
         assertEquals(6, test2.get(1));
     }
@@ -326,9 +328,27 @@ public class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
-        ArrayList<Integer> test2 = gson.fromJson(response.body(), new TypeToken<List<Integer>>(){}.getType());
-//        assertEquals(5, test2.get(0));
-//        assertEquals(6, test2.get(1));
+        ArrayList<Task> test2 = gson.fromJson(response.body(), new TypeToken<List<Task>>() {
+        }.getType());
+        assertEquals(1, test2.get(0).getId());
+        assertEquals(2, test2.get(1).getId());
+        assertEquals(3, test2.get(2).getId());
+    }
+
+    @Test
+    void getPrioritizedTasks() throws IOException, InterruptedException {
+        addInfo();
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks/");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, response.statusCode());
+        ArrayList<Task> test2 = gson.fromJson(response.body(), new TypeToken<List<Task>>() {
+        }.getType());
+        assertEquals(2, test2.get(0).getId());
+        assertEquals(3, test2.get(1).getId());
+        assertEquals(5, test2.get(2).getId());
+        assertEquals(1, test2.get(3).getId());
     }
 
     void addInfo() {

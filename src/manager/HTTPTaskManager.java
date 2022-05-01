@@ -2,18 +2,18 @@ package manager;
 
 import api.KVTaskClient;
 import com.google.gson.Gson;
-import tasks.Epic;
-import tasks.Subtask;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import tasks.Task;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.TreeSet;
 
 public class HTTPTaskManager extends FileBackedTasksManager {
     KVTaskClient client;
-    Gson gson = new Gson();
+    //    Gson gson = new Gson();
+    Gson gson = new GsonBuilder().registerTypeAdapter(new TypeToken<Node<Task>>() {
+            }.getType(),
+            new NodeJsonAdapter()).create();
 
     public HTTPTaskManager(String url) {
         client = new KVTaskClient(url);
