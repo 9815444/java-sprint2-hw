@@ -39,6 +39,12 @@ public class Epic extends Task {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        Epic epic = (Epic) obj;
+        return super.equals(obj) && super.timeEquals(endTime,epic.endTime);
+    }
+
+    @Override
     public LocalDateTime getEndTime() {
         return endTime;
     }

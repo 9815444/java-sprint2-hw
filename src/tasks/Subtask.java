@@ -46,6 +46,12 @@ public class Subtask extends Task {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        Subtask subtask = (Subtask) obj;
+        return super.equals(obj) && epic.equals(subtask.epic);
+    }
+
+    @Override
     public String toString() {
         return "Subtask{" +
                 "epic=" + epic +

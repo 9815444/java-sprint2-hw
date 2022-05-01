@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import manager.FileBackedTasksManager;
+import manager.HTTPTaskManager;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -14,22 +15,27 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.logging.Handler;
 
 import static jdk.internal.util.xml.XMLStreamWriter.DEFAULT_CHARSET;
 
 public class HttpTaskServer {
     private static final int PORT = 8080;
-    private final HttpServer httpServer;
+    private HttpServer httpServer;
     FileBackedTasksManager manager;
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    public HttpTaskServer(FileBackedTasksManager manager) throws IOException {
+    public HttpTaskServer(HTTPTaskManager manager) throws IOException {
         this.manager = manager;
         this.httpServer = HttpServer.create();
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TasksHandler(manager));
         httpServer.start();
         System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
+    }
+
+    public void stop() {
+        httpServer.stop(0);
     }
 
     static class TasksHandler implements HttpHandler {
@@ -193,12 +199,11 @@ public class HttpTaskServer {
             Subtask subtask = gson.fromJson(body, Subtask.class);
             //Если id не передан, то считаем, что это add. Иначе - update
             if (subtask.getId() == 0) {
-                manager.addTask(subtask);
+                manager.addSubtask(subtask);
             } else {
-                manager.updateTask(subtask);
+                manager.updateSubtask(subtask);
             }
             sendResponse(exchange, 201, response);
-            System.out.println(manager.getTasks());
         }
 
         private void getTasks(HttpExchange exchange, String query) throws IOException {

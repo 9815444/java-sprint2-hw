@@ -32,7 +32,6 @@ public class Task {
         this.duration = duration;
     }
 
-    //todo убрать
     public Task(int id, String title, String description, Status status) {
         this.id = id;
         this.title = title;
@@ -49,6 +48,38 @@ public class Task {
         this.taskType = TaskType.TASK;
         this.startTime = startTime;
         this.duration = duration;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Task task = (Task) obj;
+        return id == task.id &&
+                title.equals(task.title) &&
+                description.equals(task.description) &&
+                status.equals(task.status) &&
+                taskType.equals(task.taskType) &&
+                durEquals(duration,task.duration) &&
+                timeEquals(startTime,task.startTime);
+    }
+
+    protected boolean durEquals(Duration value1, Duration value2) {
+        if ((value1 == null) && (value2 == null)) {
+            return true;
+        } else if ((value1 == null) || (value2 == null)) {
+            return false;
+        } else {
+            return value1.equals(value2);
+        }
+    }
+
+    protected boolean timeEquals(LocalDateTime value1, LocalDateTime value2) {
+        if ((value1 == null) && (value2 == null)) {
+            return true;
+        } else if ((value1 == null) || (value2 == null)) {
+            return false;
+        } else {
+            return value1.equals(value2);
+        }
     }
 
     public LocalDateTime getEndTime() {
