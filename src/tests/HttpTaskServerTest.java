@@ -326,7 +326,7 @@ public class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
-        ArrayList<Integer> test2 = gson.fromJson(response.body(), new TypeToken<List<Integer>>(){}.getType());
+        ArrayList<Task> test2 = gson.fromJson(response.body(), new TypeToken<List<Task>>(){}.getType());
 //        assertEquals(5, test2.get(0));
 //        assertEquals(6, test2.get(1));
     }
