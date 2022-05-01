@@ -89,6 +89,14 @@ public class Task {
         return startTime.plus(duration);
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     public int getId() {
         return id;
     }
