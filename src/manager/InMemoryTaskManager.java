@@ -58,29 +58,21 @@ public class InMemoryTaskManager implements TaskManager {
     //tasks
     @Override
     public void addTask(Task task) {
-        try {
-            task.setId(++id);
-            tasks.put(id, task);
-            prioritizedTasks.add(task);
-            if (isTaskStartTimeException()) {
-                throw new TaskStartTimeException("Пересечение задач.");
-            }
-        } catch (TaskStartTimeException e) {
-            System.out.println(e.getMessage());
+        task.setId(++id);
+        tasks.put(id, task);
+        prioritizedTasks.add(task);
+        if (isTaskStartTimeException()) {
+            throw new TaskStartTimeException("Пересечение задач.");
         }
     }
 
     @Override
     public void updateTask(Task task) {
-        try {
-            prioritizedTasks.remove(tasks.get(task.getId()));
-            prioritizedTasks.add(task);
-            tasks.put(task.getId(), task);
-            if (isTaskStartTimeException()) {
-                throw new TaskStartTimeException("Пересечение задач.");
-            }
-        } catch (TaskStartTimeException e) {
-            System.out.println(e.getMessage());
+        prioritizedTasks.remove(tasks.get(task.getId()));
+        prioritizedTasks.add(task);
+        tasks.put(task.getId(), task);
+        if (isTaskStartTimeException()) {
+            throw new TaskStartTimeException("Пересечение задач.");
         }
     }
 
@@ -168,32 +160,24 @@ public class InMemoryTaskManager implements TaskManager {
     //subtask
     @Override
     public void addSubtask(Subtask subtask) {
-        try {
-            subtask.setId(++id);
-            subtasks.put(id, subtask);
-            prioritizedTasks.add(subtask);
-            subtask.getEpic().getEpicSubtasks().add(id);
-            calcEpicStatus(subtask.getEpic());
-            if (isTaskStartTimeException()) {
-                throw new TaskStartTimeException("Пересечение задач.");
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        subtask.setId(++id);
+        subtasks.put(id, subtask);
+        prioritizedTasks.add(subtask);
+        subtask.getEpic().getEpicSubtasks().add(id);
+        calcEpicStatus(subtask.getEpic());
+        if (isTaskStartTimeException()) {
+            throw new TaskStartTimeException("Пересечение задач.");
         }
     }
 
     @Override
     public void updateSubtask(Subtask subtask) {
-        try {
-            prioritizedTasks.remove(subtasks.get(subtask.getId()));
-            prioritizedTasks.add(subtask);
-            subtasks.put(subtask.getId(), subtask);
-            calcEpicStatus(subtask.getEpic());
-            if (isTaskStartTimeException()) {
-                throw new TaskStartTimeException("Пересечение задач.");
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        prioritizedTasks.remove(subtasks.get(subtask.getId()));
+        prioritizedTasks.add(subtask);
+        subtasks.put(subtask.getId(), subtask);
+        calcEpicStatus(subtask.getEpic());
+        if (isTaskStartTimeException()) {
+            throw new TaskStartTimeException("Пересечение задач.");
         }
     }
 

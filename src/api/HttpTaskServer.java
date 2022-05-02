@@ -1,12 +1,14 @@
 package api;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import manager.FileBackedTasksManager;
 import manager.HTTPTaskManager;
+import manager.Node;
+import manager.NodeJsonAdapter;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -15,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.logging.Handler;
 
 import static jdk.internal.util.xml.XMLStreamWriter.DEFAULT_CHARSET;
@@ -23,7 +27,31 @@ public class HttpTaskServer {
     private static final int PORT = 8080;
     private HttpServer httpServer;
     FileBackedTasksManager manager;
-    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    //private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .registerTypeAdapter(
+                    new TypeToken<Node<Task>>() {
+                    }.getType(),
+                    new NodeJsonAdapter()
+            )
+            .registerTypeAdapter(
+                    LocalDateTime.class,
+                    (JsonDeserializer<LocalDateTime>) (json, type, context) -> LocalDateTime.parse(json.getAsString())
+            )
+            .registerTypeAdapter(
+                    LocalDateTime.class,
+                    (JsonSerializer<LocalDateTime>) (srs, typeOfSrs, context) -> new JsonPrimitive(srs.toString())
+            )
+            .registerTypeAdapter(
+                    Duration.class,
+                    (JsonDeserializer<Duration>) (json, type, context) -> Duration.parse(json.getAsString())
+            )
+            .registerTypeAdapter(
+                    Duration.class,
+                    (JsonSerializer<Duration>) (srs, typeOfSrs, context) -> new JsonPrimitive(srs.toString())
+            )
+            .create();
 
     public HttpTaskServer(HTTPTaskManager manager) throws IOException {
         this.manager = manager;

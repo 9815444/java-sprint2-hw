@@ -1,7 +1,8 @@
 import api.HttpTaskServer;
 import api.KVServer;
 import api.KVTaskClient;
-import com.google.gson.Gson;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import manager.*;
 import tasks.Epic;
 import tasks.Subtask;
@@ -17,7 +18,30 @@ import static java.time.LocalTime.now;
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .registerTypeAdapter(
+                        new TypeToken<Node<Task>>() {
+                        }.getType(),
+                        new NodeJsonAdapter()
+                )
+                .registerTypeAdapter(
+                        LocalDateTime.class,
+                        (JsonDeserializer<LocalDateTime>) (json, type, context) -> LocalDateTime.parse(json.getAsString())
+                )
+                .registerTypeAdapter(
+                        LocalDateTime.class,
+                        (JsonSerializer<LocalDateTime>) (srs, typeOfSrs, context) -> new JsonPrimitive(srs.toString())
+                )
+                .registerTypeAdapter(
+                        Duration.class,
+                        (JsonDeserializer<Duration>) (json, type, context) -> Duration.parse(json.getAsString())
+                )
+                .registerTypeAdapter(
+                        Duration.class,
+                        (JsonSerializer<Duration>) (srs, typeOfSrs, context) -> new JsonPrimitive(srs.toString())
+                )
+                .create();
 
 //        FileBackedTasksManager manager = FileBackedTasksManager.loadFromFile(new File("./resources/data.csv"));
 //        FileBackedTasksManager manager = (FileBackedTasksManager) Managers.getDefault();

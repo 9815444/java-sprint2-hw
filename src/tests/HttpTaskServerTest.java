@@ -2,12 +2,9 @@ package tests;
 
 import api.HttpTaskServer;
 import api.KVServer;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import manager.HTTPTaskManager;
-import manager.Managers;
-import manager.Status;
+import manager.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,8 +30,35 @@ public class HttpTaskServerTest {
     HTTPTaskManager manager;
     HttpTaskServer httpTaskServer;
     KVServer kvServer;
-    Gson gson = new Gson();
-
+//    Gson gson = new Gson();
+    Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .registerTypeAdapter(
+                    new TypeToken<Node<Task>>() {
+                    }.getType(),
+                    new NodeJsonAdapter())
+            .registerTypeAdapter(
+                    new TypeToken<Node<Task>>() {
+                    }.getType(),
+                    new NodeJsonAdapter()
+            )
+            .registerTypeAdapter(
+                    LocalDateTime.class,
+                    (JsonDeserializer<LocalDateTime>) (json, type, context) -> LocalDateTime.parse(json.getAsString())
+            )
+            .registerTypeAdapter(
+                    LocalDateTime.class,
+                    (JsonSerializer<LocalDateTime>) (srs, typeOfSrs, context) -> new JsonPrimitive(srs.toString())
+            )
+            .registerTypeAdapter(
+                    Duration.class,
+                    (JsonDeserializer<Duration>) (json, type, context) -> Duration.parse(json.getAsString())
+            )
+            .registerTypeAdapter(
+                    Duration.class,
+                    (JsonSerializer<Duration>) (srs, typeOfSrs, context) -> new JsonPrimitive(srs.toString())
+            )
+            .create();
     @BeforeEach
     void initialize() throws IOException {
         kvServer = new KVServer();
@@ -70,7 +94,7 @@ public class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        String tasksjson = new GsonBuilder().setPrettyPrinting().create().toJson(manager.getTasks());
+        String tasksjson = gson.toJson(manager.getTasks());
         assertEquals(tasksjson, response.body());
     }
 
@@ -91,7 +115,7 @@ public class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        String epicsjson = new GsonBuilder().setPrettyPrinting().create().toJson(manager.getEpics());
+        String epicsjson = gson.toJson(manager.getEpics());
         assertEquals(epicsjson, response.body());
     }
 
@@ -112,7 +136,7 @@ public class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        String subtaskJson = new GsonBuilder().setPrettyPrinting().create().toJson(manager.getSubtasks());
+        String subtaskJson = gson.toJson(manager.getSubtasks());
         assertEquals(subtaskJson, response.body());
     }
 
