@@ -26,11 +26,28 @@ public class InMemoryTaskManager implements TaskManager {
         Comparator<Task> comparator = new Comparator<Task>() {
             @Override
             public int compare(Task o1, Task o2) {
-                if (o1.getStartTime() == null && o2.getStartTime() == null) return 1;
-                else if (o1.getStartTime() == null && o2.getStartTime() != null) return 1;
-                else if (o1.getStartTime() != null && o2.getStartTime() == null) return -1;
-                else if (o1.getStartTime().equals(o2.getStartTime())) return 1;
-                else return (int) -Duration.between(o1.getStartTime(), o2.getStartTime()).toMillis();
+                if (o1.getId() == o2.getId()) {
+                    return 0;
+                }
+                if (o1.getStartTime() == null && o2.getStartTime() == null) {
+                    return 1;
+                }
+                if (o1.getStartTime() == null && o2.getStartTime() != null) {
+                    return 1;
+                }
+                if (o1.getStartTime() != null && o2.getStartTime() == null) {
+                    return -1;
+                }
+                if (o1.getStartTime().equals(o2.getStartTime())) {
+                    return 1;
+                }
+                if (o1.getStartTime().isBefore(o2.getStartTime())) {
+                    return -1;
+                }
+                if (o1.getStartTime().isAfter(o2.getStartTime())) {
+                    return 1;
+                }
+                return 0;
             }
         };
         prioritizedTasks = new TreeSet<Task>(comparator);

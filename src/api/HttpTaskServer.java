@@ -27,14 +27,13 @@ public class HttpTaskServer {
     private static final int PORT = 8080;
     private HttpServer httpServer;
     FileBackedTasksManager manager;
-    //private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static Gson gson = new GsonBuilder()
             .setPrettyPrinting()
-            .registerTypeAdapter(
-                    new TypeToken<Node<Task>>() {
-                    }.getType(),
-                    new NodeJsonAdapter()
-            )
+//            .registerTypeAdapter(
+//                    new TypeToken<Node<Task>>() {
+//                    }.getType(),
+//                    new NodeJsonAdapter()
+//            )
             .registerTypeAdapter(
                     LocalDateTime.class,
                     (JsonDeserializer<LocalDateTime>) (json, type, context) -> LocalDateTime.parse(json.getAsString())
@@ -52,6 +51,15 @@ public class HttpTaskServer {
                     (JsonSerializer<Duration>) (srs, typeOfSrs, context) -> new JsonPrimitive(srs.toString())
             )
             .create();
+
+//    private static Gson gson = new GsonBuilder()
+//            .setPrettyPrinting()
+//            .registerTypeAdapter(
+//                    new TypeToken<Node<Task>>() {
+//                    }.getType(),
+//                    new NodeJsonAdapter()
+//            )
+//            .create();
 
     public HttpTaskServer(HTTPTaskManager manager) throws IOException {
         this.manager = manager;

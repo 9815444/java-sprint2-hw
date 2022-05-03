@@ -22,26 +22,21 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class HttpTaskServerTest {
 
     HTTPTaskManager manager;
     HttpTaskServer httpTaskServer;
     KVServer kvServer;
-//    Gson gson = new Gson();
+    //    Gson gson = new Gson();
     Gson gson = new GsonBuilder()
             .setPrettyPrinting()
-            .registerTypeAdapter(
-                    new TypeToken<Node<Task>>() {
-                    }.getType(),
-                    new NodeJsonAdapter())
-            .registerTypeAdapter(
-                    new TypeToken<Node<Task>>() {
-                    }.getType(),
-                    new NodeJsonAdapter()
-            )
+//            .registerTypeAdapter(
+//                    new TypeToken<Node<Task>>() {
+//                    }.getType(),
+//                    new NodeJsonAdapter()
+//            )
             .registerTypeAdapter(
                     LocalDateTime.class,
                     (JsonDeserializer<LocalDateTime>) (json, type, context) -> LocalDateTime.parse(json.getAsString())
@@ -59,6 +54,7 @@ public class HttpTaskServerTest {
                     (JsonSerializer<Duration>) (srs, typeOfSrs, context) -> new JsonPrimitive(srs.toString())
             )
             .create();
+
     @BeforeEach
     void initialize() throws IOException {
         kvServer = new KVServer();
@@ -361,6 +357,7 @@ public class HttpTaskServerTest {
 
     @Test
     void getPrioritizedTasks() throws IOException, InterruptedException {
+
         addInfo();
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/");
@@ -373,6 +370,43 @@ public class HttpTaskServerTest {
         assertEquals(3, test2.get(1).getId());
         assertEquals(5, test2.get(2).getId());
         assertEquals(1, test2.get(3).getId());
+    }
+
+    @Test
+    void saveAndRestoreManager() throws IOException, InterruptedException {
+
+        Task task1 = new Task("Task1", "", Status.DONE, LocalDateTime.now(), Duration.ofHours(1));
+        manager.addTask(task1);
+
+        Task task2 = new Task("Task2", "", Status.NEW, LocalDateTime.now().plusDays(1), Duration.ofHours(1));
+        manager.addTask(task2);
+
+        Task task3 = new Task("Task3", "", Status.NEW, LocalDateTime.now().plusDays(2), Duration.ofHours(1));
+        manager.addTask(task3);
+
+        Epic epic1 = new Epic("Epic1", "");
+        manager.addEpic(epic1);
+        Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.DONE, epic1, LocalDateTime.now().plusDays(3), Duration.ofHours(1));
+        manager.addSubtask(subtask11);
+        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.IN_PROGRESS, epic1);
+        manager.addSubtask(subtask12);
+
+        manager.getTask(1);
+        manager.getTask(2);
+        manager.getTask(3);
+
+        manager.deleteTask(1);
+
+        HTTPTaskManager manager2 = (HTTPTaskManager) Managers.getDefault();
+        manager2.load();
+
+        assertEquals(manager.history().size(), manager2.history().size());
+        assertArrayEquals(manager.history().toArray(), manager2.history().toArray());
+        assertArrayEquals(manager.getPrioritizedTasks().toArray(), manager2.getPrioritizedTasks().toArray());
+        assertArrayEquals(manager.getTasks().values().toArray(), manager2.getTasks().values().toArray());
+        assertArrayEquals(manager.getSubtasks().values().toArray(), manager2.getSubtasks().values().toArray());
+        assertArrayEquals(manager.getEpics().values().toArray(), manager2.getEpics().values().toArray());
+
     }
 
     void addInfo() {

@@ -1,10 +1,12 @@
 package tests;
 
+import exceptions.TaskStartTimeException;
 import manager.Status;
 import manager.TaskManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -157,17 +159,17 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         manager.deleteAllSubtask();
         manager.addSubtask(new Subtask("Epic1 Subtask1", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1)));
-        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1)));
+        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1)));
         Assertions.assertEquals(Status.DONE, epic1.getStatus(), "Неверный статус с двумя выполненными подзадачами.");
 
         manager.deleteAllSubtask();
-        manager.addSubtask(new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1)));
-        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1)));
+        manager.addSubtask(new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now().plusDays(2), Duration.ofHours(1)));
+        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now().plusDays(3), Duration.ofHours(1)));
         Assertions.assertEquals(Status.IN_PROGRESS, epic1.getStatus(), "Неверный статус с подзадачами NEW + DONE");
 
         manager.deleteAllSubtask();
         manager.addSubtask(new Subtask("Epic1 Subtask1", "", Status.IN_PROGRESS, epic1, LocalDateTime.now(), Duration.ofHours(1)));
-        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.IN_PROGRESS, epic1, LocalDateTime.now(), Duration.ofHours(1)));
+        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.IN_PROGRESS, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1)));
         Assertions.assertEquals(Status.IN_PROGRESS, epic1.getStatus(), "Неверный статус с подзадачами IN_PROGRESS");
     }
 
@@ -176,7 +178,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic epic1 = new Epic("Epic1", "");
         manager.addEpic(epic1);
         manager.addSubtask(new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1)));
-        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1)));
+        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1)));
 
         Epic epic11 = new Epic("Epic1New", "");
         epic11.setId(1);
@@ -199,7 +201,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic epic1 = new Epic("Epic1", "");
         manager.addEpic(epic1);
         manager.addSubtask(new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1)));
-        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1)));
+        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1)));
 
         Epic epic = manager.getEpic(1);
 
@@ -213,7 +215,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic epic1 = new Epic("Epic1", "");
         manager.addEpic(epic1);
         manager.addSubtask(new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1)));
-        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1)));
+        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1)));
 
         final HashMap<Integer, Epic> epics = manager.getEpics();
 
@@ -227,7 +229,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic epic1 = new Epic("Epic1", "");
         manager.addEpic(epic1);
         manager.addSubtask(new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1)));
-        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1)));
+        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1)));
 
         manager.deleteEpic(0);
         final HashMap<Integer, Epic> epics = manager.getEpics();
@@ -243,7 +245,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic epic1 = new Epic("Epic1", "");
         manager.addEpic(epic1);
         manager.addSubtask(new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1)));
-        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1)));
+        manager.addSubtask(new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1)));
 
         manager.deleteAllEpics();
 
@@ -257,7 +259,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         manager.addEpic(epic1);
         Subtask subtask11 = new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1));
         manager.addSubtask(subtask11);
-        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1));
+        Subtask subtask12 = new Subtask("Epic1 Subtask2", "", Status.NEW, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1));
         manager.addSubtask(subtask12);
 
         Subtask subtask121 = manager.getSubtask(subtask12.getId());
@@ -283,7 +285,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Subtask subtask2 = new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1));
         manager.addSubtask(subtask2);
 
-        Subtask subtask2New = new Subtask("Epic1 Subtask2New", "", Status.IN_PROGRESS, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1));
+        Subtask subtask2New = new Subtask("Epic1 Subtask2New", "", Status.IN_PROGRESS, epic1, LocalDateTime.now().plusDays(2), Duration.ofHours(1));
         subtask2New.setId(subtask2.getId());
         manager.updateSubtask(subtask2New);
 
@@ -305,7 +307,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         manager.addEpic(epic1);
         Subtask subtask1 = new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1));
         manager.addSubtask(subtask1);
-        Subtask subtask2 = new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1));
+        Subtask subtask2 = new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1));
         manager.addSubtask(subtask2);
 
         Subtask subtask = manager.getSubtask(2);
@@ -321,7 +323,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         manager.addEpic(epic1);
         Subtask subtask1 = new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1));
         manager.addSubtask(subtask1);
-        Subtask subtask2 = new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1));
+        Subtask subtask2 = new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1));
         manager.addSubtask(subtask2);
 
         final HashMap<Integer, Subtask> subtasks = manager.getSubtasks();
@@ -338,7 +340,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         manager.addEpic(epic1);
         Subtask subtask1 = new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1));
         manager.addSubtask(subtask1);
-        Subtask subtask2 = new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1));
+        Subtask subtask2 = new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1));
         manager.addSubtask(subtask2);
 
         manager.deleteSubtask(0);
@@ -356,7 +358,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         manager.addEpic(epic1);
         Subtask subtask1 = new Subtask("Epic1 Subtask1", "", Status.NEW, epic1, LocalDateTime.now(), Duration.ofHours(1));
         manager.addSubtask(subtask1);
-        Subtask subtask2 = new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now(), Duration.ofHours(1));
+        Subtask subtask2 = new Subtask("Epic1 Subtask2", "", Status.DONE, epic1, LocalDateTime.now().plusDays(1), Duration.ofHours(1));
         manager.addSubtask(subtask2);
 
         manager.deleteAllSubtask();
@@ -423,10 +425,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Task task1 = new Task("Task1", "", Status.DONE, LocalDateTime.now(), Duration.ofHours(1));
         manager.addTask(task1);
 
-        Task task2 = new Task("Task2", "", Status.NEW, LocalDateTime.now(), Duration.ofHours(1));
+        Task task2 = new Task("Task2", "", Status.NEW, LocalDateTime.now().plusDays(1), Duration.ofHours(1));
         manager.addTask(task2);
 
-        Task task3 = new Task("Task3", "", Status.NEW, LocalDateTime.now(), Duration.ofHours(1));
+        Task task3 = new Task("Task3", "", Status.NEW, LocalDateTime.now().plusDays(2), Duration.ofHours(1));
         manager.addTask(task3);
 
         manager.getTask(1);
@@ -500,10 +502,21 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Task task1 = new Task("Task1", "", Status.DONE, startTime1, duration1);
         manager.addTask(task1);
 
-        LocalDateTime startTime2 = LocalDateTime.of(2022, 1, 1, 1, 5);
+        LocalDateTime startTime2 = LocalDateTime.of(2022, 2, 1, 1, 5);
         Duration duration2 = Duration.ofHours(2);
         Task task2 = new Task("Task2", "", Status.DONE, startTime1, duration1);
-        manager.addTask(task2);
+        final TaskStartTimeException exception = assertThrows(
+                TaskStartTimeException.class,
+
+                new Executable() {
+                    @Override
+                    public void execute() throws Throwable {
+                        manager.addTask(task2);
+                    }
+                }
+
+        );
+        assertEquals("Пересечение задач.", exception.getMessage());
     }
 
 }

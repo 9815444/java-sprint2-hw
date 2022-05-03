@@ -105,7 +105,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return fileBackedTasksManager;
     }
 
-    private static Task getTaskAllKind(int id, InMemoryTaskManager inMemoryTaskManager) {
+    protected static Task getTaskAllKind(int id, InMemoryTaskManager inMemoryTaskManager) {
         Task task = inMemoryTaskManager.getTasks().get(id);
         if (!(task == null)) {
             return task;

@@ -20,11 +20,11 @@ public class Main {
 
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
-                .registerTypeAdapter(
-                        new TypeToken<Node<Task>>() {
-                        }.getType(),
-                        new NodeJsonAdapter()
-                )
+//            .registerTypeAdapter(
+//                    new TypeToken<Node<Task>>() {
+//                    }.getType(),
+//                    new NodeJsonAdapter()
+//            )
                 .registerTypeAdapter(
                         LocalDateTime.class,
                         (JsonDeserializer<LocalDateTime>) (json, type, context) -> LocalDateTime.parse(json.getAsString())
@@ -56,9 +56,15 @@ public class Main {
 //        int f = 1;
 //
 //        //Without dates
-        manager.addTask(new Task("TaskNull", "", Status.DONE));
-        manager.addTask(new Task("Task2", "", Status.NEW, LocalDateTime.now(), Duration.ofMinutes(10)));
-        manager.addTask(new Task("Task1", "", Status.DONE, LocalDateTime.now().plusHours(1), Duration.ofHours(1)));
+//        manager.addTask(new Task("TaskNull", "", Status.DONE));
+//        manager.addTask(new Task("Task2", "", Status.NEW, LocalDateTime.now(), Duration.ofMinutes(10)));
+//        manager.addTask(new Task("Task1", "", Status.DONE, LocalDateTime.now().plusHours(1), Duration.ofHours(1)));
+        Task task = new Task("Task2", "", Status.NEW, LocalDateTime.now(), Duration.ofMinutes(10));
+        String json = gson.toJson(task);
+
+        System.out.println(json);
+        task = gson.fromJson("{\"id\":0,\"title\":\"Task2\",\"description\":\"\",\"status\":\"NEW\",\"taskType\":\"TASK\",\"duration\":\"PT10M\",\"startTime\":\"2022-05-03T11:21:20.348706800\"}", Task.class);
+        int a = 1;
 ////        Task task21 = new Task("Task21", "", Status.NEW, LocalDateTime.now().plusHours(1), Duration.ofHours(1));
 ////        task21.setId(2);
 ////        manager.updateTask(task21);
